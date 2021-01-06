@@ -1,0 +1,12 @@
+explorer.test.bitcoingold.dev {
+  header {
+    Access-Control-Allow-Methods "POST, GET, OPTIONS"
+    Access-Control-Allow-Headers "*"
+    Access-Control-Allow-Origin "*"
+  }
+  root * /srv
+  reverse_proxy /api/* bitcore:3000 {
+    header_down -Access-Control-Allow-Origin
+  }
+  file_server
+}

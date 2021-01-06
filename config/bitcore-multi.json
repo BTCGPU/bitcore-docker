@@ -1,0 +1,48 @@
+{
+  "bitcoreNode": {
+    "host": "0.0.0.0",
+    "port": 3000,
+    "maxPoolSize": 30,
+    "services": {
+      "api": {
+        "wallets": {
+          "allowCreationBeforeCompleteSync": false
+        }
+      }
+    },
+    "chains": {
+      "BTG": {
+        "testnet": {
+          "chainSource": "p2p",
+          "trustedPeers": [
+            {
+              "host": "bgoldd-test",
+              "port": 18337
+            }
+          ],
+          "rpc": {
+            "host": "bgoldd-test",
+            "port": 18339,
+            "username": "local",
+            "password": "local"
+          }
+        },
+        "mainnet": {
+          "chainSource": "p2p",
+          "trustedPeers": [
+            {
+              "host": "bgoldd",
+              "port": 8337
+            }
+          ],
+          "rpc": {
+            "host": "bgoldd",
+            "port": 8339,
+            "username": "local",
+            "password": "local"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,89 @@
+version: '3'
+services:
+  db:
+    image: "mongo:latest"
+    restart: unless-stopped
+    # ports:
+    #   - 27017:27017
+    volumes:
+      - ./sysroot/etc/mongo:/etc/mongo
+      - ./sysroot/data/db:/data/db
+
+  bgoldd-test:
+    image: "ubuntu:latest"
+    # restart: unless-stopped
+    volumes:
+      # Bitcoin Gold Core config
+      - ./config/bitcoingold.conf:/etc/bitcoingold.conf
+      # Bitcoin Gold Core binaries
+      - ./base/bitcoin-gold:/opt/bitcoin-gold
+      # Blockchain database
+      - ./sysroot/opt/btg-data-testnet:/root/.bitcoingold
+    ports:
+      # P2P port
+      - 18338:18338
+      # RPC port
+      # - 18339:18339
+    entrypoint: ["/opt/bitcoin-gold/bin/bgoldd", "-testnet=1", "-conf=/etc/bitcoingold.conf"]
+      
+  # bgoldd:
+  #   image: "ubuntu:latest"
+  #   # restart: unless-stopped
+  #   volumes:
+  #     # Bitcoin Gold Core config
+  #     - ./config/bitcoingold.conf:/etc/bitcoingold.conf
+  #     # Bitcoin Gold Core binaries
+  #     - ./base/bitcoin-gold:/opt/bitcoin-gold
+  #     # Blockchain database
+  #     - ./sysroot/opt/btg-data:/root/.bitcoingold
+  #   ports:
+  #     # P2P port
+  #     - 8338:8338
+  #     # RPC port
+  #     # - 8339:8339
+  #   entrypoint: ["/opt/bitcoin-gold/bin/bgoldd", "-conf=/etc/bitcoingold.conf"]
+      
+  bitcore:
+    image: "node:11.15"
+    # restart: unless-stopped
+    depends_on:
+      - db
+    volumes:
+      # Bitcore source
+      - ./base/bitcore:/opt/bitcore
+      # Bitcore config file (the username and passworld should match the full node config). 
+      # By default we use the testnet-only config:
+      - ./config/bitcore.json:/etc/bitcore.json
+      # Or instead, you can switch `bitcore-multi.json` to run both the mainnet and the testnet:
+      # - ./config/bitcore-multi.json:/etc/bitcore.json
+    environment:
+      DB_HOST: db
+      DB_NAME: bitcore-btg
+      BITCORE_CONFIG_PATH: /etc/bitcore.json
+      BITCORE_NODE_HTTP_HOST: 0.0.0.0
+      BITCORE_NODE_HTTP_PORT: 3000
+      CHAIN: btg
+    # ports:
+    #   - "9229:9229"
+    #   - "3000:3000"
+    entrypoint: ["/bin/bash","-i","-c","cd /opt/bitcore/; npm run node"]
+
+  server:
+    image: "caddy:latest"
+    restart: unless-stopped
+    links:
+      - bitcore
+    volumes:
+      # Caddyfile
+      - ./config/Caddyfile:/etc/caddy/Caddyfile
+      # Map the Insight static website built by `bitcore`
+      - ./base/bitcore/packages/insight/www:/srv
+      - caddy_data:/data
+      - caddy_config:/config
+    ports:
+      - "80:80"
+      - "443:443"
+
+volumes:
+  caddy_data:
+  caddy_config:

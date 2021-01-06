@@ -1,0 +1,4 @@
+sysroot/
+tmp/
+base/
+.env
