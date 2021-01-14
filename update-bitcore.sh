@@ -13,7 +13,7 @@ Then within the shell, run the following to compile everything (Bitcore and Insi
   npm install
   npm run bootstrap
   npm run compile
-  (cd packages/insight && npm run build:prod)
+  (cd packages/insight && npm install && npm run build:prod)
 
 Once finished, you will have the compiled static frontend build at:
   /opt/bitcore/packages/insight/www/
