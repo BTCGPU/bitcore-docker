@@ -30,7 +30,7 @@
     >   npm install
     >   npm run bootstrap
     >   npm run compile
-    >   (cd packages/insight && npm run build:prod)
+    >   (cd packages/insight && npm install && npm run build:prod)
     >   ```
     >
     > Once finished, you will have the compiled static frontend build at:
@@ -50,6 +50,11 @@
 The docker-compose file is shipped with Caddy web server which manages TLS automatically when deployed in a public server with the correct port mapping. By default it points to `explorer.test.bitcoingold.dev`. Change it to deploy on other domains. You can find the config under `config/`.
 
 The multi-network config can be enabled by modifiying `docker-compose.yml` file. By default the docker-compose file only enables testnet. To enable both the mainnet and the testnet, uncomment the mainnet full node service and change the bitcore config file from `bitcore.json` to `bitcore-multi.json` (follow the comments).
+
+Notable config items:
+
+- `services.maxPoolSize`: The size of the MongoDB connection thread pool. Leave it empty to automatically decide.
+- `services.api.rateLimiter`: Enabled by default. Can be disalbed by `services.api.rateLimiter.disalbed = true`.
 
 ## Maintenance
 
