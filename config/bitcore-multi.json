@@ -5,6 +5,9 @@
     "maxPoolSize": 30,
     "services": {
       "api": {
+        "rateLimiter": {
+          "disabled": true
+        },
         "wallets": {
           "allowCreationBeforeCompleteSync": false
         }
